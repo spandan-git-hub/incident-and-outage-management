@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import ConnectionStatus from './ConnectionStatus';
 
 const Navbar = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <motion.nav 
       initial={{ y: -100 }}
@@ -24,14 +28,44 @@ const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="flex space-x-6"
+            className="flex items-center space-x-6"
           >
+            <ConnectionStatus />
+            
             <Link to="/" className="hover:text-blue-200 transition-colors">
               Home
             </Link>
-            <Link to="/test" className="hover:text-blue-200 transition-colors">
-              Test
-            </Link>
+            {isAuthenticated && (
+              <Link to="/test" className="hover:text-blue-200 transition-colors">
+                Test
+              </Link>
+            )}
+            
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm bg-white/20 px-3 py-1 rounded">
+                  {user?.name} ({user?.role})
+                </span>
+                <button
+                  onClick={logout}
+                  className="bg-red-500 hover:bg-red-600 px-4 py-1 rounded transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="hover:text-blue-200 transition-colors">
+                  Login
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="bg-white text-blue-600 px-4 py-1 rounded hover:bg-gray-100 transition-colors"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </motion.div>
         </div>
       </div>
