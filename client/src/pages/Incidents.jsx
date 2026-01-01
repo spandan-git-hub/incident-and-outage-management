@@ -13,6 +13,7 @@ function Incidents() {
   const [editingIncident, setEditingIncident] = useState(null);
   const [assigningIncident, setAssigningIncident] = useState(null);
   const [updatingStatusIncident, setUpdatingStatusIncident] = useState(null);
+  const [viewingCommentsIncident, setViewingCommentsIncident] = useState(null);
   const { user, hasRole } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -181,6 +182,14 @@ function Incidents() {
                   </div>
 
                   <div className="flex gap-2 ml-4">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setViewingCommentsIncident(incident)}
+                      className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                    >
+                      💬 Comments
+                    </motion.button>
                     {canUpdateStatus(incident) && (
                       <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -280,6 +289,16 @@ function Incidents() {
               setUpdatingStatusIncident(null);
               fetchIncidents();
             }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Comments Modal */}
+      <AnimatePresence>
+        {viewingCommentsIncident && (
+          <CommentsModal
+            incident={viewingCommentsIncident}
+            onClose={() => setViewingCommentsIncident(null)}
           />
         )}
       </AnimatePresence>
@@ -895,6 +914,172 @@ function UpdateStatusModal({ incident, onClose, onSuccess }) {
             </motion.button>
           </div>
         </form>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Comments Modal Component
+function CommentsModal({ incident, onClose }) {
+  const { showToast } = useToast();
+  const { user } = useAuth();
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newComment, setNewComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchComments();
+    // Poll for new comments every 5 seconds
+    const interval = setInterval(fetchComments, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/comments/${incident._id}`);
+      setComments(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const response = await axios.post('http://localhost:5000/api/comments', {
+        incidentId: incident._id,
+        content: newComment
+      });
+      
+      setComments([...comments, response.data]);
+      setNewComment('');
+      showToast('Comment added successfully!', 'success');
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      showToast('Failed to add comment', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-lg">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h2 className="text-xl font-bold mb-1">Comments</h2>
+              <p className="text-sm text-white/90">{incident.title}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-white hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Comments List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {loading ? (
+            <div className="flex justify-center items-center h-32">
+              <div className="text-gray-500">Loading comments...</div>
+            </div>
+          ) : comments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-32 text-gray-500">
+              <span className="text-4xl mb-2">💬</span>
+              <p>No comments yet. Be the first to comment!</p>
+            </div>
+          ) : (
+            <AnimatePresence>
+              {comments.map((comment) => (
+                <motion.div
+                  key={comment._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="bg-gray-50 rounded-lg p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                      {comment.author.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900">
+                          {comment.author.name}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
+                          {comment.author.role}
+                        </span>
+                        {comment.author._id === user?.id && (
+                          <span className="text-xs text-gray-500">(You)</span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 break-words whitespace-pre-wrap">
+                        {comment.content}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(comment.createdAt).toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
+
+        {/* Comment Form */}
+        <div className="border-t p-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              disabled={submitting}
+            />
+            <div className="flex justify-end">
+              <motion.button
+                type="submit"
+                disabled={submitting || !newComment.trim()}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition"
+              >
+                {submitting ? 'Posting...' : 'Post Comment'}
+              </motion.button>
+            </div>
+          </form>
+        </div>
       </motion.div>
     </motion.div>
   );
