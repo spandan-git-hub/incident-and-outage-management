@@ -36,9 +36,14 @@ const Navbar = () => {
               Home
             </Link>
             {isAuthenticated && (
-              <Link to="/test" className="hover:text-blue-200 transition-colors">
-                Test
-              </Link>
+              <>
+                <Link to="/incidents" className="hover:text-blue-200 transition-colors">
+                  Incidents
+                </Link>
+                <Link to="/test" className="hover:text-blue-200 transition-colors">
+                  Test
+                </Link>
+              </>
             )}
             
             {isAuthenticated ? (

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Test from './pages/Test';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Incidents from './pages/Incidents';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -16,6 +17,14 @@ function App() {
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route 
+              path="incidents" 
+              element={
+                <ProtectedRoute>
+                  <Incidents />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="test" 
               element={
