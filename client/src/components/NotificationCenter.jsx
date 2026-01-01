@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
 
 function NotificationCenter() {
@@ -20,7 +21,7 @@ function NotificationCenter() {
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/notifications/unread/count');
+      const response = await axios.get(`${API_BASE_URL}/api/notifications/unread/count`);
       setUnreadCount(response.data.count);
     } catch (error) {
       console.error('Error fetching unread count:', error);
@@ -30,7 +31,7 @@ function NotificationCenter() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/notifications');
+      const response = await axios.get(`${API_BASE_URL}/api/notifications`);
       setNotifications(response.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -58,7 +59,7 @@ function NotificationCenter() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await axios.patch('http://localhost:5000/api/notifications/read-all');
+      await axios.patch(`${API_BASE_URL}/api/notifications/read-all`);
       setNotifications(notifications.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch (error) {

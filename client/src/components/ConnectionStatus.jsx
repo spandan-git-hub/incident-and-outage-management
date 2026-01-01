@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const ConnectionStatus = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -9,7 +10,7 @@ const ConnectionStatus = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        await axios.get('http://localhost:5000/api/test', { timeout: 3000 });
+        await axios.get(`${API_BASE_URL}/api/test`, { timeout: 3000 });
         setIsConnected(true);
       } catch (error) {
         setIsConnected(false);

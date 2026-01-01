@@ -6,6 +6,9 @@ node_modules/
 .env.local
 .env.*.local
 
+# Deployment documentation
+DEPLOYMENT.md
+
 # Build outputs
 dist/
 build/

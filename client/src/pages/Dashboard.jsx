@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
 
 function Dashboard() {
@@ -18,7 +19,7 @@ function Dashboard() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/stats/overview');
+      const response = await axios.get(`${API_BASE_URL}/api/stats/overview`);
       setStats(response.data);
       setError('');
     } catch (err) {

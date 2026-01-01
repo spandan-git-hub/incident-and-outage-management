@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
+import { API_BASE_URL } from '../config';
 
 function Incidents() {
   const [incidents, setIncidents] = useState([]);
@@ -25,7 +26,7 @@ function Incidents() {
   const fetchIncidents = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/incidents');
+      const response = await axios.get(`${API_BASE_URL}/api/incidents`);
       setIncidents(response.data);
       setError('');
     } catch (err) {
@@ -41,7 +42,7 @@ function Incidents() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/incidents/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/incidents/${id}`);
       setIncidents(incidents.filter(inc => inc._id !== id));
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete incident');
@@ -329,7 +330,7 @@ function CreateIncidentModal({ onClose, onSuccess }) {
     setError('');
 
     try {
-      await axios.post('http://localhost:5000/api/incidents', formData);
+      await axios.post(`${API_BASE_URL}/api/incidents`, formData);
       showToast('Incident created successfully!', 'success');
       onSuccess();
     } catch (err) {
@@ -452,7 +453,7 @@ function EditIncidentModal({ incident, onClose, onSuccess }) {
     setError('');
 
     try {
-      await axios.put(`http://localhost:5000/api/incidents/${incident._id}`, formData);
+      await axios.put(`${API_BASE_URL}/api/incidents/${incident._id}`, formData);
       showToast('Incident updated successfully!', 'success');
       onSuccess();
     } catch (err) {
@@ -588,7 +589,7 @@ function AssignIncidentModal({ incident, onClose, onSuccess }) {
 
   const fetchOperators = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/incidents/operators/list');
+      const response = await axios.get(`${API_BASE_URL}/api/incidents/operators/list`);
       setOperators(response.data);
       setLoading(false);
     } catch (err) {
@@ -616,7 +617,7 @@ function AssignIncidentModal({ incident, onClose, onSuccess }) {
         payload.operatorId = selectedOperator;
       }
 
-      await axios.patch(`http://localhost:5000/api/incidents/${incident._id}/assign`, payload);
+      await axios.patch(`${API_BASE_URL}/api/incidents/${incident._id}/assign`, payload);
       showToast(`Incident assigned successfully via ${assignmentMethod} method!`, 'success');
       onSuccess();
     } catch (err) {
@@ -764,7 +765,7 @@ function UpdateStatusModal({ incident, onClose, onSuccess }) {
     setError('');
 
     try {
-      await axios.patch(`http://localhost:5000/api/incidents/${incident._id}/status`, formData);
+      await axios.patch(`${API_BASE_URL}/api/incidents/${incident._id}/status`, formData);
       showToast('Status/Severity updated successfully!', 'success');
       onSuccess();
     } catch (err) {
@@ -943,7 +944,7 @@ function CommentsModal({ incident, onClose }) {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/comments/${incident._id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/comments/${incident._id}`);
       setComments(response.data);
       setLoading(false);
     } catch (error) {
@@ -958,7 +959,7 @@ function CommentsModal({ incident, onClose }) {
 
     setSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/comments', {
+      const response = await axios.post(`${API_BASE_URL}/api/comments`, {
         incidentId: incident._id,
         content: newComment
       });
