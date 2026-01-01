@@ -221,4 +221,62 @@ router.patch('/:id/assign', auth, role('admin'), async (req, res) => {
   }
 });
 
+// PATCH /api/incidents/:id/status - Update incident status/severity (assigned operator or admin only)
+router.patch('/:id/status', auth, async (req, res) => {
+  try {
+    const { status, severity } = req.body;
+
+    if (!status && !severity) {
+      return res.status(400).json({ 
+        message: 'At least one field (status or severity) is required' 
+      });
+    }
+
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: 'Incident not found' });
+    }
+
+    // Check if user is admin or the assigned operator
+    const isAdmin = req.user.role === 'admin';
+    const isAssignedOperator = incident.assignedOperator && 
+                               incident.assignedOperator.toString() === req.user.id;
+
+    if (!isAdmin && !isAssignedOperator) {
+      return res.status(403).json({ 
+        message: 'Only assigned operator or admin can update status/severity' 
+      });
+    }
+
+    // Update fields
+    if (status) {
+      // Validate status transitions
+      const validStatuses = ['open', 'acknowledged', 'in-progress', 'resolved', 'closed'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
+      incident.status = status;
+    }
+
+    if (severity) {
+      const validSeverities = ['low', 'medium', 'high', 'critical'];
+      if (!validSeverities.includes(severity)) {
+        return res.status(400).json({ message: 'Invalid severity' });
+      }
+      incident.severity = severity;
+    }
+
+    await incident.save();
+    await incident.populate('reporter', 'name email role');
+    if (incident.assignedOperator) {
+      await incident.populate('assignedOperator', 'name email role');
+    }
+
+    res.json(incident);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 export default router;
