@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import incidentRoutes from './routes/incidents.js';
 import notificationRoutes from './routes/notifications.js';
 import commentRoutes from './routes/comments.js';
+import statsRoutes from './routes/stats.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Test Route
 app.get('/api/test', (req, res) => {
