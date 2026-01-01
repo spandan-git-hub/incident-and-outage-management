@@ -20,11 +20,3 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         sync: false
-
-databases:
-  # MongoDB Database
-  - name: incident-management-db
-    databaseName: incident_management
-    user: admin
-    region: oregon
-    plan: free
