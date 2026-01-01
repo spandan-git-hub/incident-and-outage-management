@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ConnectionStatus from './ConnectionStatus';
+import NotificationCenter from './NotificationCenter';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -48,6 +49,7 @@ const Navbar = () => {
             
             {isAuthenticated ? (
               <>
+                <NotificationCenter />
                 <span className="text-sm bg-white/20 px-3 py-1 rounded">
                   {user?.name} ({user?.role})
                 </span>

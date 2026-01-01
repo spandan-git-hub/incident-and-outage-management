@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 
 function Incidents() {
   const [incidents, setIncidents] = useState([]);
@@ -13,6 +14,7 @@ function Incidents() {
   const [assigningIncident, setAssigningIncident] = useState(null);
   const [updatingStatusIncident, setUpdatingStatusIncident] = useState(null);
   const { user, hasRole } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -167,7 +169,13 @@ function Incidents() {
                         </div>
                       )}
                       <div>
-                        <span className="font-medium">Created:</span> {new Date(incident.createdAt).toLocaleString()}
+                        <span className="font-medium">Created:</span> {new Date(incident.createdAt).toLocaleString('en-GB', { 
+                          day: '2-digit', 
+                          month: '2-digit', 
+                          year: 'numeric', 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
                       </div>
                     </div>
                   </div>
@@ -281,6 +289,7 @@ function Incidents() {
 
 // Create Incident Modal Component
 function CreateIncidentModal({ onClose, onSuccess }) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -296,9 +305,11 @@ function CreateIncidentModal({ onClose, onSuccess }) {
 
     try {
       await axios.post('http://localhost:5000/api/incidents', formData);
+      showToast('Incident created successfully!', 'success');
       onSuccess();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create incident');
+      showToast('Failed to create incident', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -400,6 +411,7 @@ function CreateIncidentModal({ onClose, onSuccess }) {
 
 // Edit Incident Modal Component
 function EditIncidentModal({ incident, onClose, onSuccess }) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     title: incident.title,
     description: incident.description,
@@ -416,9 +428,11 @@ function EditIncidentModal({ incident, onClose, onSuccess }) {
 
     try {
       await axios.put(`http://localhost:5000/api/incidents/${incident._id}`, formData);
+      showToast('Incident updated successfully!', 'success');
       onSuccess();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update incident');
+      showToast('Failed to update incident', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -535,6 +549,7 @@ function EditIncidentModal({ incident, onClose, onSuccess }) {
 
 // Assign Incident Modal Component
 function AssignIncidentModal({ incident, onClose, onSuccess }) {
+  const { showToast } = useToast();
   const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState('');
   const [assignmentMethod, setAssignmentMethod] = useState('manual');
@@ -577,9 +592,11 @@ function AssignIncidentModal({ incident, onClose, onSuccess }) {
       }
 
       await axios.patch(`http://localhost:5000/api/incidents/${incident._id}/assign`, payload);
+      showToast(`Incident assigned successfully via ${assignmentMethod} method!`, 'success');
       onSuccess();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to assign incident');
+      showToast('Failed to assign incident', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -708,6 +725,7 @@ function AssignIncidentModal({ incident, onClose, onSuccess }) {
 
 // Update Status Modal Component
 function UpdateStatusModal({ incident, onClose, onSuccess }) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     status: incident.status,
     severity: incident.severity
@@ -722,9 +740,11 @@ function UpdateStatusModal({ incident, onClose, onSuccess }) {
 
     try {
       await axios.patch(`http://localhost:5000/api/incidents/${incident._id}/status`, formData);
+      showToast('Status/Severity updated successfully!', 'success');
       onSuccess();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update status');
+      showToast('Failed to update status', 'error');
     } finally {
       setSubmitting(false);
     }

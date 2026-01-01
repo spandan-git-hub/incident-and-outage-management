@@ -1,10 +1,26 @@
 import express from 'express';
 import Incident from '../models/Incident.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import auth from '../middleware/auth.js';
 import role from '../middleware/role.js';
 
 const router = express.Router();
+
+// Helper function to create notification
+const createNotification = async (type, message, userId, incidentId) => {
+  try {
+    const notification = new Notification({
+      type,
+      message,
+      userId,
+      incidentId
+    });
+    await notification.save();
+  } catch (error) {
+    console.error('Error creating notification:', error);
+  }
+};
 
 // Helper function for auto-assignment (round-robin)
 const autoAssignOperator = async () => {
@@ -215,6 +231,22 @@ router.patch('/:id/assign', auth, role('admin'), async (req, res) => {
     await incident.populate('reporter', 'name email role');
     await incident.populate('assignedOperator', 'name email role');
 
+    // Create notification for assigned operator
+    await createNotification(
+      'assignment',
+      `You have been assigned to incident: ${incident.title}`,
+      assignedOperatorId,
+      incident._id
+    );
+
+    // Notify reporter about assignment
+    await createNotification(
+      'assignment',
+      `Your incident "${incident.title}" has been assigned to ${incident.assignedOperator.name}`,
+      incident.reporter,
+      incident._id
+    );
+
     res.json(incident);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -271,6 +303,48 @@ router.patch('/:id/status', auth, async (req, res) => {
     await incident.populate('reporter', 'name email role');
     if (incident.assignedOperator) {
       await incident.populate('assignedOperator', 'name email role');
+    }
+
+    // Get current user info for notification message
+    const currentUser = await User.findById(req.user.id);
+    
+    // Create notifications for status/severity changes
+    const changes = [];
+    if (status) changes.push(`status to "${status}"`);
+    if (severity) changes.push(`severity to "${severity}"`);
+    const changeMessage = changes.join(' and ');
+
+    // Notify reporter if they're not the one making the change
+    if (incident.reporter.toString() !== req.user.id) {
+      await createNotification(
+        'status_change',
+        `${currentUser.name} updated ${changeMessage} for incident: "${incident.title}"`,
+        incident.reporter,
+        incident._id
+      );
+    }
+
+    // Notify assigned operator if they exist and aren't the one making the change
+    if (incident.assignedOperator && incident.assignedOperator._id.toString() !== req.user.id) {
+      await createNotification(
+        'status_change',
+        `${currentUser.name} updated ${changeMessage} for incident: "${incident.title}"`,
+        incident.assignedOperator._id,
+        incident._id
+      );
+    }
+
+    // Notify all admins (except the one making the change)
+    const admins = await User.find({ role: 'admin' });
+    for (const admin of admins) {
+      if (admin._id.toString() !== req.user.id) {
+        await createNotification(
+          'status_change',
+          `${currentUser.name} updated ${changeMessage} for incident: "${incident.title}"`,
+          admin._id,
+          incident._id
+        );
+      }
     }
 
     res.json(incident);
