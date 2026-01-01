@@ -86,16 +86,21 @@ function Incidents() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto pb-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Incidents</h1>
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            🎫 Incident Management
+          </h1>
+          <p className="text-gray-600 mt-1">Track, assign, and resolve incidents</p>
+        </div>
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateForm(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition font-semibold shadow-lg"
         >
-          + Create Incident
+          ✨ Create Incident
         </motion.button>
       </div>
 
@@ -130,7 +135,8 @@ function Incidents() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -100 }}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+                whileHover={{ y: -4 }}
+                className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 hover:shadow-xl transition-all"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">

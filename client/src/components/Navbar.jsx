@@ -20,9 +20,10 @@ const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-xl font-bold"
+            className="text-xl font-bold flex items-center space-x-2"
           >
-            <Link to="/">Incident & Outage Platform</Link>
+            <span className="text-2xl">🎯</span>
+            <span>Incident Management</span>
           </motion.div>
           
           <motion.div 
@@ -34,18 +35,15 @@ const Navbar = () => {
             <ConnectionStatus />
             
             <Link to="/" className="hover:text-blue-200 transition-colors">
-              Home
+              🏠 Home
             </Link>
             {isAuthenticated && (
               <>
                 <Link to="/dashboard" className="hover:text-blue-200 transition-colors">
-                  Dashboard
+                  📊 Dashboard
                 </Link>
                 <Link to="/incidents" className="hover:text-blue-200 transition-colors">
-                  Incidents
-                </Link>
-                <Link to="/test" className="hover:text-blue-200 transition-colors">
-                  Test
+                  🎫 Incidents
                 </Link>
               </>
             )}

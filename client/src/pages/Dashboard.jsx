@@ -76,19 +76,24 @@ function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex justify-between items-center"
       >
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            📊 Analytics Dashboard
+          </h1>
+          <p className="text-gray-600 mt-1">Real-time incident monitoring and insights</p>
+        </div>
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
           whileTap={{ scale: 0.95 }}
           onClick={fetchStats}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-lg"
         >
           🔄 Refresh
         </motion.button>
@@ -161,9 +166,12 @@ function Dashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Open vs Closed</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🔄</span>
+            Open vs Closed
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -192,9 +200,12 @@ function Dashboard() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-lg shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Severity Distribution</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            Severity Distribution
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={stats.severityStats}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -223,9 +234,12 @@ function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-lg shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Status Breakdown</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">📦</span>
+            Status Breakdown
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -255,9 +269,12 @@ function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-lg shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Incidents per Operator</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">👥</span>
+            Incidents per Operator
+          </h2>
           {stats.operatorStats.length === 0 ? (
             <div className="flex items-center justify-center h-[300px] text-gray-500">
               <div className="text-center">
@@ -298,9 +315,12 @@ function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-white rounded-lg shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Incident Trend (Last 7 Days)</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">📈</span>
+            Incident Trend (Last 7 Days)
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={stats.recentTrend} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />

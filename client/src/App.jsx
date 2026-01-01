@@ -2,9 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import Layout from './components/Layout';
-import Home from './pages/Home';
+import LandingHome from './pages/LandingHome';
 import Dashboard from './pages/Dashboard';
-import Test from './pages/Test';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Incidents from './pages/Incidents';
@@ -16,34 +15,17 @@ function App() {
       <ToastProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="login" element={<Login />} />
-              <Route path="register" element={<Register />} />
-              <Route 
-                path="dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="incidents" 
-                element={
-                  <ProtectedRoute>
-                    <Incidents />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="test" 
-                element={
-                  <ProtectedRoute>
-                    <Test />
-                  </ProtectedRoute>
-                } 
-              />
+            {/* Landing page without layout */}
+            <Route path="/" element={<LandingHome />} />
+            
+            {/* Auth routes without layout */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Protected routes with layout and navbar */}
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/incidents" element={<Incidents />} />
             </Route>
           </Routes>
         </BrowserRouter>
