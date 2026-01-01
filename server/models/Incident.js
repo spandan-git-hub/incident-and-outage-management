@@ -21,6 +21,11 @@ const incidentSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
+  assignmentMethod: {
+    type: String,
+    enum: ['manual', 'auto'],
+    default: null
+  },
   status: {
     type: String,
     enum: ['open', 'in-progress', 'resolved', 'closed'],

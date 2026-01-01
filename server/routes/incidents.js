@@ -1,9 +1,45 @@
 import express from 'express';
 import Incident from '../models/Incident.js';
+import User from '../models/User.js';
 import auth from '../middleware/auth.js';
 import role from '../middleware/role.js';
 
 const router = express.Router();
+
+// Helper function for auto-assignment (round-robin)
+const autoAssignOperator = async () => {
+  try {
+    // Get all operators and admins
+    const operators = await User.find({ 
+      role: { $in: ['operator', 'admin'] } 
+    }).select('_id');
+
+    if (operators.length === 0) {
+      return null;
+    }
+
+    // Get the last assigned incident
+    const lastAssigned = await Incident.findOne({ 
+      assignedOperator: { $ne: null } 
+    }).sort({ updatedAt: -1 });
+
+    if (!lastAssigned) {
+      // No previous assignment, return first operator
+      return operators[0]._id;
+    }
+
+    // Find current operator's index
+    const currentIndex = operators.findIndex(
+      op => op._id.toString() === lastAssigned.assignedOperator.toString()
+    );
+
+    // Get next operator (round-robin)
+    const nextIndex = (currentIndex + 1) % operators.length;
+    return operators[nextIndex]._id;
+  } catch (error) {
+    return null;
+  }
+};
 
 // POST /api/incidents - Create incident (all authenticated users)
 router.post('/', auth, async (req, res) => {
@@ -39,6 +75,19 @@ router.get('/', auth, async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.json(incidents);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET /api/incidents/operators/list - Get all operators (admin only)
+router.get('/operators/list', auth, role('admin'), async (req, res) => {
+  try {
+    const operators = await User.find({ 
+      role: { $in: ['operator', 'admin'] } 
+    }).select('_id name email role');
+
+    res.json(operators);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -104,6 +153,71 @@ router.delete('/:id', auth, role('admin'), async (req, res) => {
     res.json({ message: 'Incident deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/incidents/:id/assign - Assign operator to incident (admin only)
+router.patch('/:id/assign', auth, role('admin'), async (req, res) => {
+  try {
+    const { operatorId, method } = req.body; // method: 'manual' or 'auto'
+
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: 'Incident not found' });
+    }
+
+    let assignedOperatorId = null;
+    let assignmentMethod = 'manual';
+
+    if (method === 'auto') {
+      // Auto-assign using round-robin
+      assignedOperatorId = await autoAssignOperator();
+      assignmentMethod = 'auto';
+
+      if (!assignedOperatorId) {
+        return res.status(400).json({ 
+          message: 'No operators available for auto-assignment' 
+        });
+      }
+    } else {
+      // Manual assignment
+      if (!operatorId) {
+        return res.status(400).json({ 
+          message: 'Operator ID is required for manual assignment' 
+        });
+      }
+
+      // Verify the operator exists and has correct role
+      const operator = await User.findById(operatorId);
+      if (!operator) {
+        return res.status(404).json({ message: 'Operator not found' });
+      }
+
+      if (!['operator', 'admin'].includes(operator.role)) {
+        return res.status(400).json({ 
+          message: 'User must be an operator or admin' 
+        });
+      }
+
+      assignedOperatorId = operatorId;
+      assignmentMethod = 'manual';
+    }
+
+    // Update incident
+    incident.assignedOperator = assignedOperatorId;
+    incident.assignmentMethod = assignmentMethod;
+    if (incident.status === 'open') {
+      incident.status = 'in-progress';
+    }
+
+    await incident.save();
+    await incident.populate('reporter', 'name email role');
+    await incident.populate('assignedOperator', 'name email role');
+
+    res.json(incident);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 
