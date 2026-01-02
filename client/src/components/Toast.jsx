@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toastVariants } from '../utils/animations';
 
 const ToastContext = createContext();
 
@@ -14,15 +15,17 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const showToast = (message, type = 'info') => {
+  const showToast = (message, type = 'info', duration = 5000) => {
     const id = Date.now();
     const toast = { id, message, type };
     setToasts((prev) => [...prev, toast]);
 
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      removeToast(id);
-    }, 5000);
+    // Auto-remove after specified duration
+    if (duration > 0) {
+      setTimeout(() => {
+        removeToast(id);
+      }, duration);
+    }
   };
 
   const removeToast = (id) => {
@@ -38,48 +41,101 @@ export const ToastProvider = ({ children }) => {
 };
 
 function ToastContainer({ toasts, removeToast }) {
-  const getToastStyles = (type) => {
-    const styles = {
-      success: 'bg-green-500',
-      error: 'bg-red-500',
-      warning: 'bg-yellow-500',
-      info: 'bg-blue-500'
+  const getToastConfig = (type) => {
+    const configs = {
+      success: {
+        icon: '✓',
+        gradient: 'from-green-500 to-emerald-600',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-900',
+        borderColor: 'border-green-200',
+        iconBg: 'bg-green-500'
+      },
+      error: {
+        icon: '✕',
+        gradient: 'from-red-500 to-rose-600',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-900',
+        borderColor: 'border-red-200',
+        iconBg: 'bg-red-500'
+      },
+      warning: {
+        icon: '⚠',
+        gradient: 'from-yellow-500 to-orange-500',
+        bgColor: 'bg-yellow-50',
+        textColor: 'text-yellow-900',
+        borderColor: 'border-yellow-200',
+        iconBg: 'bg-yellow-500'
+      },
+      info: {
+        icon: 'ℹ',
+        gradient: 'from-blue-500 to-primary-600',
+        bgColor: 'bg-blue-50',
+        textColor: 'text-blue-900',
+        borderColor: 'border-blue-200',
+        iconBg: 'bg-blue-500'
+      }
     };
-    return styles[type] || styles.info;
-  };
-
-  const getToastIcon = (type) => {
-    const icons = {
-      success: '✓',
-      error: '✕',
-      warning: '⚠',
-      info: 'ℹ'
-    };
-    return icons[type] || icons.info;
+    return configs[type] || configs.info;
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 space-y-2">
-      <AnimatePresence>
-        {toasts.map((toast) => (
-          <motion.div
-            key={toast.id}
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.8 }}
-            className={`${getToastStyles(toast.type)} text-white px-6 py-4 rounded-lg shadow-lg min-w-[300px] max-w-md flex items-center gap-3`}
-          >
-            <span className="text-2xl font-bold">{getToastIcon(toast.type)}</span>
-            <p className="flex-1">{toast.message}</p>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="ml-2 hover:bg-white/20 rounded-full w-6 h-6 flex items-center justify-center"
+    <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
+      <AnimatePresence mode="popLayout">
+        {toasts.map((toast) => {
+          const config = getToastConfig(toast.type);
+          return (
+            <motion.div
+              key={toast.id}
+              variants={toastVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              layout
+              className={`${config.bgColor} ${config.textColor} border-2 ${config.borderColor} rounded-xl shadow-soft-lg backdrop-blur-sm overflow-hidden`}
             >
-              ✕
-            </button>
-          </motion.div>
-        ))}
+              <div className="flex items-start gap-3 p-4">
+                {/* Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+                  className={`${config.iconBg} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg flex-shrink-0`}
+                >
+                  {config.icon}
+                </motion.div>
+
+                {/* Message */}
+                <p className="flex-1 font-medium text-sm leading-relaxed pt-1">
+                  {toast.message}
+                </p>
+
+                {/* Close Button */}
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => removeToast(toast.id)}
+                  className="ml-2 hover:bg-black/5 rounded-full w-6 h-6 flex items-center justify-center transition-colors flex-shrink-0"
+                  aria-label="Close notification"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </motion.button>
+              </div>
+
+              {/* Progress bar */}
+              <motion.div
+                initial={{ width: "100%" }}
+                animate={{ width: "0%" }}
+                transition={{ duration: 5, ease: "linear" }}
+                className={`h-1 bg-gradient-to-r ${config.gradient}`}
+              />
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
     </div>
   );
 }
+
