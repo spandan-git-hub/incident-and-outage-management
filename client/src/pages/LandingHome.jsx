@@ -202,7 +202,7 @@ function LandingHome() {
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Full Transparency</h3>
-              <p className="text-gray-600 leading-relaxed">Comprehensive audit logs and real-time analytics provide complete visibility into incident lifecycle and team performance</p>
+              <p className="text-gray-600 leading-relaxed">Real-time analytics and status tracking provide complete visibility into incident lifecycle and team performance</p>
             </motion.div>
           </div>
         </motion.div>
@@ -340,7 +340,7 @@ function LandingHome() {
               Ready to Transform Your Incident Response?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Start managing incidents like a pro in minutes—no credit card required
+              Start managing incidents like a pro in minutes
             </p>
             <Link to="/register" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <motion.button
