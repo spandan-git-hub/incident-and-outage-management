@@ -18,6 +18,9 @@ router.get('/overview', auth, async (req, res) => {
           _id: '$status',
           count: { $sum: 1 }
         }
+      },
+      {
+        $sort: { _id: 1 } // Stable alphabetical sort
       }
     ]);
 
@@ -27,6 +30,11 @@ router.get('/overview', auth, async (req, res) => {
         $group: {
           _id: '$severity',
           count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { 
+          _id: 1 // This will sort but we need custom order
         }
       }
     ]);
@@ -62,7 +70,7 @@ router.get('/overview', auth, async (req, res) => {
         }
       },
       {
-        $sort: { count: -1 }
+        $sort: { name: 1 } // Stable alphabetical sort by operator name
       }
     ]);
 
@@ -108,7 +116,10 @@ router.get('/overview', auth, async (req, res) => {
       closedIncidents,
       unassignedCount,
       statusStats: statusStats.map(s => ({ name: s._id, value: s.count })),
-      severityStats: severityStats.map(s => ({ name: s._id, value: s.count })),
+      severityStats: severityStats.map(s => ({ 
+        name: s._id.charAt(0).toUpperCase() + s._id.slice(1), 
+        value: s.count 
+      })),
       operatorStats: operatorStats.map(o => ({ name: o.name, value: o.count })),
       recentTrend: recentIncidents.map(r => ({ date: r._id, count: r.count }))
     });

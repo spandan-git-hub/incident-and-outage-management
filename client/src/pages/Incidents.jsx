@@ -10,6 +10,114 @@ import { SkeletonCard } from '../components/ui/Skeleton';
 import Modal, { ConfirmationModal } from '../components/ui/Modal';
 import { containerVariants, itemVariants, pageVariants } from '../utils/animations';
 
+// Action Menu Dropdown Component
+function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit, onDelete, canUpdateStatus, hasRole }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const actions = [
+    {
+      label: 'View Comments',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      ),
+      onClick: () => { onViewComments(); setIsOpen(false); },
+      show: true,
+      color: 'text-gray-700 hover:bg-gray-50'
+    },
+    {
+      label: 'Update Status',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      ),
+      onClick: () => { onUpdateStatus(); setIsOpen(false); },
+      show: canUpdateStatus,
+      color: 'text-purple-700 hover:bg-purple-50'
+    },
+    {
+      label: 'Assign Operator',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+      ),
+      onClick: () => { onAssign(); setIsOpen(false); },
+      show: hasRole('admin'),
+      color: 'text-green-700 hover:bg-green-50'
+    },
+    {
+      label: 'Edit Incident',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+      onClick: () => { onEdit(); setIsOpen(false); },
+      show: hasRole('operator', 'admin'),
+      color: 'text-blue-700 hover:bg-blue-50'
+    },
+    {
+      label: 'Delete Incident',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      ),
+      onClick: () => { onDelete(); setIsOpen(false); },
+      show: hasRole('admin'),
+      color: 'text-red-700 hover:bg-red-50'
+    }
+  ].filter(action => action.show);
+
+  return (
+    <div className="relative">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm flex items-center gap-2 shadow-md"
+      >
+        <span>Actions</span>
+        <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-12 w-56 bg-white rounded-xl shadow-2xl border-2 border-gray-200 py-2 z-20 overflow-hidden"
+            >
+              {actions.map((action, index) => (
+                <motion.button
+                  key={action.label}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={action.onClick}
+                  className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors font-medium text-sm ${action.color}`}
+                >
+                  {action.icon}
+                  <span>{action.label}</span>
+                </motion.button>
+              ))}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Incidents() {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,164 +218,185 @@ function Incidents() {
       animate="visible"
       className="max-w-7xl mx-auto pb-8"
     >
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      {/* Header */}
+      <motion.div 
+        variants={itemVariants} 
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8"
+      >
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gradient-accent">
-            🎫 Incident Management
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            Incident Management
           </h1>
-          <p className="text-gray-600 mt-1">Track, assign, and resolve incidents</p>
+          <p className="text-gray-600 text-lg">Track, assign, and resolve incidents efficiently</p>
         </div>
         <motion.button
-          whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
+          whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(59, 130, 246, 0.3)" }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateForm(true)}
-          className="btn-primary flex items-center gap-2"
+          className="px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
         >
-          <span>✨</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
           <span>Create Incident</span>
         </motion.button>
       </motion.div>
 
+      {/* Error Alert */}
       <AnimatePresence>
         {error && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="card bg-red-50 border-red-200 mb-6"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl flex items-start gap-3 shadow-md"
           >
-            <div className="flex items-center gap-3 text-red-700">
-              <span className="text-2xl">⚠️</span>
-              <p>{error}</p>
+            <div className="p-2 bg-red-100 rounded-lg">
+              <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
+            <p className="text-red-800 font-semibold flex-1">{error}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div variants={itemVariants} className="space-y-4">
+      {/* Incidents List */}
+      <motion.div variants={itemVariants} className="space-y-5">
         <AnimatePresence mode="popLayout">
           {incidents.length === 0 ? (
             <EmptyIncidents onCreateClick={() => setShowCreateForm(true)} />
           ) : (
-            incidents.map((incident, index) => (
+            incidents.map((incident) => (
               <motion.div
                 key={incident._id}
                 variants={itemVariants}
                 layout
-                whileHover={{ y: -4, boxShadow: "0 12px 28px rgba(0,0,0,0.12)" }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="card-interactive"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                className="relative group"
               >
-                <div className="flex flex-col lg:flex-row justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {incident.title}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        <span className={`badge ${getSeverityColor(incident.severity)}`}>
-                          {incident.severity}
-                        </span>
-                        <span className={`badge ${getStatusColor(incident.status)}`}>
-                          {incident.status}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{incident.description}</p>
-                    <div className="text-sm text-gray-500 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">👤 Reporter:</span>
-                        <span>{incident.reporter?.name}</span>
-                        <span className="px-2 py-0.5 bg-gray-100 rounded text-xs">
-                          {incident.reporter?.role}
-                        </span>
-                      </div>
-                      {incident.assignedOperator ? (
-                        <motion.div
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="flex items-center gap-2"
-                        >
-                          <span className="font-medium">🎯 Assigned:</span>
-                          <span>{incident.assignedOperator.name}</span>
-                          {incident.assignmentMethod && (
-                            <span className="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">
-                              {incident.assignmentMethod}
-                            </span>
-                          )}
-                        </motion.div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-orange-600">⚠️ Unassigned</span>
+                {/* Background gradient on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                
+                {/* Card */}
+                <div className="relative bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-md group-hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col lg:flex-row justify-between gap-6">
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      {/* Title and Badges */}
+                      <div className="flex flex-wrap items-start gap-3 mb-4">
+                        <h3 className="text-2xl font-bold text-gray-900 flex-1 min-w-0">
+                          {incident.title}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          <span className={`badge badge-${incident.severity}`}>
+                            {getSeverityIcon(incident.severity)} {incident.severity}
+                          </span>
+                          <span className={`badge badge-${incident.status}`}>
+                            {incident.status}
+                          </span>
                         </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">🕒 Created:</span>
-                        <span>{new Date(incident.createdAt).toLocaleString('en-GB', { 
-                          day: '2-digit', 
-                          month: '2-digit', 
-                          year: 'numeric', 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}</span>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-gray-600 mb-5 line-clamp-2 text-base leading-relaxed">
+                        {incident.description}
+                      </p>
+
+                      {/* Metadata */}
+                      <div className="space-y-3">
+                        {/* Reporter */}
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-gray-100 rounded-lg">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Reporter</span>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-sm font-semibold text-gray-900">{incident.reporter?.name}</span>
+                              <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                                {incident.reporter?.role}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Assignment */}
+                        {incident.assignedOperator ? (
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Assigned To</span>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-sm font-semibold text-gray-900">{incident.assignedOperator.name}</span>
+                                {incident.assignmentMethod && (
+                                  <span className="px-2 py-0.5 bg-green-100 rounded-full text-xs font-medium text-green-700">
+                                    {incident.assignmentMethod}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </motion.div>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-orange-100 rounded-lg">
+                              <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-semibold text-orange-600">Unassigned</span>
+                          </div>
+                        )}
+
+                        {/* Created Date */}
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Created</span>
+                            <p className="text-sm font-semibold text-gray-900 mt-0.5">
+                              {new Date(incident.createdAt).toLocaleString('en-GB', { 
+                                day: '2-digit', 
+                                month: 'short', 
+                                year: 'numeric', 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex lg:flex-col flex-wrap gap-2">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setViewingCommentsIncident(incident)}
-                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all font-medium flex items-center gap-2 shadow-md"
-                    >
-                      <span>💬</span>
-                      <span>Comments</span>
-                    </motion.button>
-                    {canUpdateStatus(incident) && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setUpdatingStatusIncident(incident)}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all font-medium flex items-center gap-2 shadow-md"
-                      >
-                        <span>🔄</span>
-                        <span>Status</span>
-                      </motion.button>
-                    )}
-                    {hasRole('admin') && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setAssigningIncident(incident)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium flex items-center gap-2 shadow-md"
-                      >
-                        <span>👤</span>
-                        <span>Assign</span>
-                      </motion.button>
-                    )}
-                    {hasRole('operator', 'admin') && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setEditingIncident(incident)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center gap-2 shadow-md"
-                      >
-                        <span>✏️</span>
-                        <span>Edit</span>
-                      </motion.button>
-                    )}
-                    {hasRole('admin') && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setDeletingIncident(incident)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium flex items-center gap-2 shadow-md"
-                      >
-                        <span>🗑️</span>
-                        <span>Delete</span>
-                      </motion.button>
-                    )}
+                    {/* Actions Menu */}
+                    <div className="flex lg:flex-col gap-3 lg:min-w-[140px]">
+                      <ActionMenu
+                        incident={incident}
+                        onViewComments={() => setViewingCommentsIncident(incident)}
+                        onUpdateStatus={() => setUpdatingStatusIncident(incident)}
+                        onAssign={() => setAssigningIncident(incident)}
+                        onEdit={() => setEditingIncident(incident)}
+                        onDelete={() => setDeletingIncident(incident)}
+                        canUpdateStatus={canUpdateStatus(incident)}
+                        hasRole={hasRole}
+                      />
+                    </div>
                   </div>
                 </div>
               </motion.div>
