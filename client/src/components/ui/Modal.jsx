@@ -57,7 +57,7 @@ const Modal = ({
             animate="visible"
             exit="exit"
             onClick={closeOnOverlayClick ? onClose : undefined}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
           />
 
           {/* Modal Content */}
@@ -67,7 +67,7 @@ const Modal = ({
             animate="visible"
             exit="exit"
             onClick={(e) => e.stopPropagation()}
-            className={`relative bg-white rounded-2xl shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col`}
+            className={`relative bg-white rounded-2xl shadow-2xl border-2 border-purple-100 ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col`}
           >
             {/* Header */}
             {(title || showCloseButton) && (
@@ -149,7 +149,7 @@ export const ConfirmationModal = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition-all"
+            className="flex-1 px-4 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 font-semibold transition-all"
           >
             {cancelText}
           </motion.button>
@@ -160,7 +160,7 @@ export const ConfirmationModal = ({
               onConfirm();
               onClose();
             }}
-            className={`flex-1 px-4 py-2 bg-gradient-to-r ${typeStyles[type]} text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all`}
+            className={`flex-1 px-4 py-2.5 bg-gradient-to-r ${typeStyles[type]} text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all`}
           >
             {confirmText}
           </motion.button>

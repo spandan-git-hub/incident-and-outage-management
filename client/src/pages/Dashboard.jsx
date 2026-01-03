@@ -10,6 +10,7 @@ function Dashboard() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchStats();
     // Auto-refresh disabled - use manual refresh button instead
     // This prevents charts from constantly changing and confusing users
