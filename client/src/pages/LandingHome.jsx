@@ -1,197 +1,154 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function LandingHome() {
+  const { isAuthenticated } = useAuth();
+
   const features = [
     {
       icon: '🎫',
       title: 'Incident Tracking',
       description: 'Create, track, and manage incidents with comprehensive details including severity levels and status workflows',
-      color: 'from-purple-600 to-purple-700'
+      color: 'from-purple-500 to-purple-600'
     },
     {
       icon: '👥',
       title: 'Smart Assignment',
       description: 'Manual selection or automated round-robin distribution to balance workload across operators',
-      color: 'from-pink-600 to-pink-700'
+      color: 'from-pink-500 to-pink-600'
     },
     {
       icon: '🔄',
       title: 'Status Workflow',
       description: 'Five-stage lifecycle: Open → Acknowledged → In-Progress → Resolved → Closed',
-      color: 'from-blue-600 to-blue-700'
+      color: 'from-blue-500 to-blue-600'
     },
     {
       icon: '🔔',
       title: 'Real-Time Notifications',
       description: 'Instant alerts for incident creation, assignments, status updates, and new comments',
-      color: 'from-indigo-600 to-indigo-700'
+      color: 'from-indigo-500 to-indigo-600'
     },
     {
       icon: '💬',
       title: 'Team Collaboration',
       description: 'Comment on incidents with automatic notifications to reporters, operators, and admins',
-      color: 'from-purple-600 to-purple-700'
+      color: 'from-cyan-500 to-cyan-600'
     },
     {
       icon: '📊',
       title: 'Analytics Dashboard',
       description: 'Visual insights with charts tracking trends, severity distribution, and operator performance',
-      color: 'from-pink-600 to-pink-700'
+      color: 'from-teal-500 to-teal-600'
     }
   ];
 
-  const stats = [
-    { value: '3', label: 'User Roles', icon: '👤' },
-    { value: '5', label: 'Status Stages', icon: '🔄' },
-    { value: '4', label: 'Severity Levels', icon: '⚠️' },
-    { value: '24/7', label: 'Real-Time Updates', icon: '⚡' }
-  ];
-
-  const workflows = [
+  const roles = [
     {
-      step: '1',
-      title: 'Create',
-      icon: '✨',
-      description: 'Report incidents with title, description, severity (Low/Medium/High/Critical)',
-      color: 'bg-gradient-to-br from-purple-600 to-purple-700'
+      name: 'Admin',
+      icon: '👑',
+      color: 'bg-red-500',
+      permissions: [
+        'Full system access and control',
+        'Create, update, delete incidents',
+        'Assign incidents to operators',
+        'View complete audit history'
+      ]
     },
     {
-      step: '2',
-      title: 'Assign',
-      icon: '🎯',
-      description: 'Auto-assign via round-robin or manually select operators from the team list',
-      color: 'bg-gradient-to-br from-pink-600 to-pink-700'
+      name: 'Operator',
+      icon: '⚙️',
+      color: 'bg-blue-500',
+      permissions: [
+        'Create and manage incidents',
+        'Update assigned incidents',
+        'Change status and add comments',
+        'View operator dashboard'
+      ]
     },
     {
-      step: '3',
-      title: 'Collaborate',
-      icon: '💬',
-      description: 'Update status, add comments, and coordinate with team members in real-time',
-      color: 'bg-gradient-to-br from-blue-600 to-blue-700'
-    },
-    {
-      step: '4',
-      title: 'Resolve',
-      icon: '✅',
-      description: 'Track progress through workflow stages and close incidents with full audit trail',
-      color: 'bg-gradient-to-br from-indigo-600 to-indigo-700'
+      name: 'Viewer',
+      icon: '👁️',
+      color: 'bg-green-500',
+      permissions: [
+        'Read-only access to incidents',
+        'View incident details and history',
+        'Monitor dashboard analytics',
+        'No modification rights'
+      ]
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            scale: [1, 1.15, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-500/8 to-indigo-500/8 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.15, 1, 1.15],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-indigo-500/8 to-slate-500/8 rounded-full blur-3xl"
-        />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
       {/* Hero Section */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-20"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5, type: 'spring', stiffness: 120 }}
-            className="inline-block mb-8"
+            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            className="inline-block mb-6"
           >
-            <div className="relative">
-              <motion.div
-                animate={{
-                  boxShadow: [
-                    '0 0 0 0 rgba(59, 130, 246, 0.4)',
-                    '0 0 0 15px rgba(59, 130, 246, 0)',
-                    '0 0 0 0 rgba(59, 130, 246, 0)'
-                  ]
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="text-7xl filter drop-shadow-xl"
-              >
-                🚨
-              </motion.div>
-            </div>
+            <div className="text-7xl">🚨</div>
           </motion.div>
           
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
-          >
-            <span className="block">Incident Management</span>
-            <span className="block bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">
-              Made Powerful
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Incident & Outage
+            <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+              Management Platform
             </span>
-          </motion.h1>
+          </h1>
           
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed"
-          >
-            Streamline incident detection, response, and resolution with intelligent automation,
-            real-time collaboration, and comprehensive analytics.
-          </motion.p>
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto">
+            Track, assign, and resolve incidents efficiently with role-based access control,
+            automated workflows, and real-time notifications
+          </p>
           
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
+            transition={{ delay: 0.4 }}
             className="flex flex-wrap gap-4 justify-center"
           >
-            <Link to="/login">
-              <motion.button
-                whileHover={{ scale: 1.03, boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)' }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-12 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl"
-              >
-                Sign In
-              </motion.button>
-            </Link>
-            <Link to="/register">
-              <motion.button
-                whileHover={{ scale: 1.03, boxShadow: '0 10px 30px rgba(59, 130, 246, 0.2)' }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-                className="bg-white/10 backdrop-blur-md text-white px-12 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition-all shadow-xl border border-white/30"
-              >
-                Get Started
-              </motion.button>
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-purple-600 text-white px-10 py-4 rounded-xl text-lg font-semibold hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  Go to Dashboard →
+                </motion.button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-purple-600 text-white px-10 py-4 rounded-xl text-lg font-semibold hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    Sign In
+                  </motion.button>
+                </Link>
+                <Link to="/register" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-white text-purple-600 px-10 py-4 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl border-2 border-purple-600"
+                  >
+                    Get Started
+                  </motion.button>
+                </Link>
+              </>
+            )}
           </motion.div>
         </motion.div>
 
@@ -199,142 +156,101 @@ function LandingHome() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mb-24"
+          transition={{ delay: 0.6 }}
+          className="mb-20"
         >
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-            className="text-4xl md:text-5xl font-bold text-white text-center mb-4"
-          >
-            Core Features
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="text-gray-400 text-center mb-12 text-lg"
-          >
-            Comprehensive tools for effective incident management
-          </motion.p>
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+            Why Choose Our Platform?
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1 + index * 0.05, duration: 0.4 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative"
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all border border-gray-100"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all" />
-                <div className="relative bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 hover:border-white/30 transition-all">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-4xl mb-5 transform group-hover:scale-110 transition-all duration-300`}>
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
-                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-3xl mb-4`}>
+                  {feature.icon}
                 </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Workflow Section */}
+        {/* Role System */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
-          className="mb-24"
+          transition={{ delay: 1 }}
+          className="mb-20"
         >
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.5 }}
-            className="text-4xl md:text-5xl font-bold text-white text-center mb-4"
-          >
-            Workflow Process
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.6, duration: 0.5 }}
-            className="text-gray-400 text-center mb-12 text-lg"
-          >
-            From detection to resolution in four streamlined steps
-          </motion.p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {workflows.map((workflow, index) => (
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
+            Three-Tier Role System
+          </h2>
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Hierarchical access control designed for efficient incident management
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {roles.map((role, index) => (
               <motion.div
-                key={workflow.step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.7 + index * 0.1, duration: 0.4 }}
-                whileHover={{ y: -8, scale: 1.03 }}
-                className="relative"
+                key={role.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.1 + index * 0.15 }}
+                whileHover={{ scale: 1.03 }}
+                className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all border border-gray-100"
               >
-                {index < workflows.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/4 -right-3 w-6 h-6 z-10">
-                    <motion.div
-                      animate={{ x: [0, 4, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="text-2xl text-gray-400"
-                    >
-                      →
-                    </motion.div>
-                  </div>
-                )}
-                <div className={`${workflow.color} rounded-3xl p-8 text-white shadow-2xl h-full relative overflow-hidden`}>
-                  <motion.div
-                    className="absolute -top-10 -right-10 text-9xl opacity-10 font-black"
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                  >
-                    {workflow.step}
-                  </motion.div>
-                  <div className="relative z-10">
-                    <div className="text-5xl mb-4">{workflow.icon}</div>
-                    <div className="text-sm font-bold opacity-80 mb-2">STEP {workflow.step}</div>
-                    <h3 className="text-2xl font-bold mb-3">{workflow.title}</h3>
-                    <p className="text-white/90 leading-relaxed">{workflow.description}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 ${role.color} rounded-xl flex items-center justify-center text-2xl`}>
+                      {role.icon}
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{role.name}</h3>
                   </div>
                 </div>
+                <ul className="space-y-3">
+                  {role.permissions.map((permission, i) => (
+                    <li key={i} className="flex items-start gap-2 text-gray-700">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{permission}</span>
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
         {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.6 }}
-          className="relative overflow-hidden max-w-3xl mx-auto"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-700/20 rounded-2xl blur-xl" />
-          <div className="relative bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 md:p-10 text-center shadow-lg border border-white/10">
-            <h2 className="text-2xl md:text-3xl font-semibold text-white mb-3">
-              Start Managing Incidents More Effectively
+        {!isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-12 text-center text-white shadow-2xl"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Streamline Your Incident Management?
             </h2>
-            <p className="text-base text-gray-300 mb-6 max-w-xl mx-auto">
-              Get started with our comprehensive incident management platform at no cost.
+            <p className="text-xl mb-8 opacity-90">
+              Join teams using our platform for efficient, collaborative incident resolution
             </p>
-            <Link to="/register">
+            <Link to="/register" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <motion.button
-                whileHover={{ scale: 1.02, boxShadow: '0 8px 20px rgba(59, 130, 246, 0.25)' }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg text-base font-medium hover:bg-blue-700 transition-all shadow-md"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-purple-600 px-10 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all shadow-lg"
               >
-                Create Account
+                Create Your Account
               </motion.button>
             </Link>
-            <p className="text-gray-400 mt-4 text-xs">
-              Free to use • No credit card required
-            </p>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
