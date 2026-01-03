@@ -9,7 +9,7 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const NavLink = ({ to, children, icon }) => {
+  const NavLink = ({ to, children, iconPath }) => {
     const isActive = location.pathname === to;
     return (
       <Link
@@ -17,21 +17,25 @@ const Navbar = () => {
         className="relative group"
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`px-4 py-2.5 text-sm font-semibold transition-colors duration-200 flex items-center gap-2.5 ${
             isActive
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-              : 'text-gray-700 hover:bg-gray-100'
+              ? 'text-purple-700'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          {icon && <span className="text-base">{icon}</span>}
+          {iconPath && (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={iconPath} />
+            </svg>
+          )}
           <span>{children}</span>
         </motion.div>
         {isActive && (
           <motion.div
             layoutId="navbar-indicator"
-            className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-full"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
         )}
@@ -49,46 +53,38 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="group ml-8">
             <motion.div
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.6 }}
-              className="relative"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-3.5 px-4 py-2.5 bg-white border-2 border-purple-200 rounded-lg group-hover:border-purple-300 group-hover:shadow-md transition-all"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity" />
-              <div className="relative w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                🎯
-              </div>
+              <span className="text-2xl">🚨</span>
+              <span className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">
+                Incident & Outage Manager
+              </span>
             </motion.div>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-lg font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-                Incident & Outage
-              </span>
-              <span className="text-xs text-gray-500 font-medium -mt-1">
-                Management Platform
-              </span>
-            </div>
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <>
-                <NavLink to="/dashboard" icon="📊">Dashboard</NavLink>
-                <NavLink to="/incidents" icon="🎫">Incidents</NavLink>
+                <NavLink to="/dashboard" iconPath="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">Dashboard</NavLink>
+                <NavLink to="/incidents" iconPath="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">Incidents</NavLink>
                 
-                <div className="ml-2">
+                <div className="ml-1">
                   <NotificationCenter />
                 </div>
                 
                 {/* User Menu */}
-                <div className="ml-3 flex items-center gap-3 pl-4 border-l border-gray-200">
+                <div className="ml-2 flex items-center gap-3 pl-4 border-l border-gray-200">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200"
+                    className="flex items-center gap-2.5 px-3 py-2 bg-white rounded-lg border border-purple-200"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md">
                       {user?.name?.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex flex-col">
@@ -104,8 +100,11 @@ const Navbar = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={logout}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 rounded-xl hover:shadow-lg transition-all duration-300"
+                    className="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center gap-2"
                   >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                     Logout
                   </motion.button>
                 </div>
@@ -114,18 +113,18 @@ const Navbar = () => {
               <div className="flex items-center gap-2">
                 <Link to="/login">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
                     Login
                   </motion.button>
                 </Link>
                 <Link to="/register">
                   <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)" }}
+                    whileHover={{ scale: 1.05, boxShadow: "0 8px 20px rgba(168, 85, 247, 0.25)" }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg transition-all duration-300"
+                    className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-md transition-all duration-200"
                   >
                     Get Started
                   </motion.button>
@@ -191,10 +190,12 @@ const Navbar = () => {
                   >
                     <Link 
                       to="/dashboard" 
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors" 
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors" 
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <span className="text-lg">📊</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
                       <span>Dashboard</span>
                     </Link>
                   </motion.div>
@@ -205,10 +206,12 @@ const Navbar = () => {
                   >
                     <Link 
                       to="/incidents" 
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors" 
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors" 
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <span className="text-lg">🎫</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                      </svg>
                       <span>Incidents</span>
                     </Link>
                   </motion.div>
@@ -218,8 +221,8 @@ const Navbar = () => {
                     transition={{ delay: 0.2 }}
                     className="border-t border-gray-200 pt-3 mt-3"
                   >
-                    <div className="flex items-center gap-3 px-4 py-2 mb-2">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md">
+                    <div className="flex items-center gap-3 px-4 py-3 mb-3 bg-white rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md">
                         {user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex flex-col">
@@ -229,8 +232,11 @@ const Navbar = () => {
                     </div>
                     <button 
                       onClick={() => { logout(); setMobileMenuOpen(false); }} 
-                      className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:shadow-lg transition-all duration-300"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors"
                     >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
                       Logout
                     </button>
                   </motion.div>
@@ -244,7 +250,7 @@ const Navbar = () => {
                   >
                     <Link 
                       to="/login" 
-                      className="block px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors" 
+                      className="block px-4 py-3 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors text-center" 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Login
@@ -257,7 +263,7 @@ const Navbar = () => {
                   >
                     <Link 
                       to="/register" 
-                      className="block px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-lg transition-all duration-300" 
+                      className="block px-4 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-md transition-all text-center" 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Get Started
