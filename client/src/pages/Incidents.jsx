@@ -10,6 +10,20 @@ import { SkeletonCard } from '../components/ui/Skeleton';
 import Modal, { ConfirmationModal } from '../components/ui/Modal';
 import { containerVariants, itemVariants, pageVariants } from '../utils/animations';
 
+// Prevent body scroll when any modal is open
+function useModalScroll(isOpen) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+}
+
 // Action Menu Dropdown Component
 function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit, onDelete, canUpdateStatus, hasRole }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -130,6 +144,10 @@ function Incidents() {
   const { user, hasRole } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  // Prevent background scroll when any modal is open
+  const isAnyModalOpen = showCreateForm || editingIncident || assigningIncident || updatingStatusIncident || viewingCommentsIncident || deletingIncident;
+  useModalScroll(isAnyModalOpen);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -558,7 +576,7 @@ function CreateIncidentModal({ onClose, onSuccess }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -716,7 +734,7 @@ function EditIncidentModal({ incident, onClose, onSuccess }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -822,12 +840,12 @@ function EditIncidentModal({ incident, onClose, onSuccess }) {
 // Assign Incident Modal Component
 function AssignIncidentModal({ incident, onClose, onSuccess }) {
   const { showToast } = useToast();
-  const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState('');
   const [assignmentMethod, setAssignmentMethod] = useState('manual');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [operators, setOperators] = useState([]);
 
   useEffect(() => {
     fetchOperators();
@@ -879,7 +897,7 @@ function AssignIncidentModal({ incident, onClose, onSuccess }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -1090,7 +1108,7 @@ function UpdateStatusModal({ incident, onClose, onSuccess }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -1220,7 +1238,7 @@ function UpdateStatusModal({ incident, onClose, onSuccess }) {
               disabled={submitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? 'Updating...' : 'Update Status'}
             </motion.button>
@@ -1247,7 +1265,7 @@ function DeleteIncidentModal({ incident, onClose, onConfirm }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -1274,7 +1292,7 @@ function DeleteIncidentModal({ incident, onClose, onConfirm }) {
         <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
             <div className="text-sm text-red-800">
               <p className="font-semibold mb-1">Warning: This action is permanent</p>
@@ -1363,7 +1381,7 @@ function CommentsModal({ incident, onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div

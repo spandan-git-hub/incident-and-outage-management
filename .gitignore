@@ -8,6 +8,8 @@ node_modules/
 
 # Deployment documentation
 DEPLOYMENT.md
+UPDATES.md
+INCIDENT_REPORT.md
 
 # Build outputs
 dist/

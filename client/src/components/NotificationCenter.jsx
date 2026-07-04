@@ -13,6 +13,18 @@ function NotificationCenter() {
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
 
+  // Prevent background scroll when notification panel is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchUnreadCount();
@@ -142,7 +154,7 @@ function NotificationCenter() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
+              className="fixed inset-0 z-40"
               onClick={() => setIsOpen(false)}
             />
 
@@ -152,7 +164,7 @@ function NotificationCenter() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="fixed right-4 top-20 w-[min(420px,calc(100vw-2rem))] max-h-[calc(100vh-6rem)] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl z-50 overflow-hidden border-2 border-purple-100"
+              className="fixed right-4 top-20 w-[min(420px,calc(100vw-2rem))] max-h-[calc(100vh-6rem)] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border-2 border-purple-100"
             >
               {/* Header */}
               <div className="bg-white border-b-2 border-purple-100 p-6 sticky top-0 z-10">

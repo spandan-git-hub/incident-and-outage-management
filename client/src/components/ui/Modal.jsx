@@ -57,7 +57,7 @@ const Modal = ({
             animate="visible"
             exit="exit"
             onClick={closeOnOverlayClick ? onClose : undefined}
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            className="absolute inset-0"
           />
 
           {/* Modal Content */}

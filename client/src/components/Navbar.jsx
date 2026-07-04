@@ -61,7 +61,7 @@ const Navbar = () => {
             >
               <span className="text-2xl">🚨</span>
               <span className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">
-                Incident & Outage Manager
+                Aegis : Incident Manager
               </span>
             </motion.div>
           </Link>
