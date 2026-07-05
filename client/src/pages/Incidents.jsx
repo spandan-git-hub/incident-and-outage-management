@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -25,8 +25,25 @@ function useModalScroll(isOpen) {
 }
 
 // Action Menu Dropdown Component
-function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit, onDelete, canUpdateStatus, hasRole }) {
-  const [isOpen, setIsOpen] = useState(false);
+function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit, onDelete, canUpdateStatus, hasRole, isOpen, onToggle, onClose }) {
+  const menuRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        onClose();
+      }
+    }
+    
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const actions = [
     {
@@ -36,7 +53,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       ),
-      onClick: () => { onViewComments(); setIsOpen(false); },
+      onClick: onViewComments,
       show: true,
       color: 'text-gray-700 hover:bg-gray-50'
     },
@@ -47,7 +64,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
       ),
-      onClick: () => { onUpdateStatus(); setIsOpen(false); },
+      onClick: onUpdateStatus,
       show: canUpdateStatus,
       color: 'text-orange-700 hover:bg-orange-50'
     },
@@ -58,7 +75,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
         </svg>
       ),
-      onClick: () => { onAssign(); setIsOpen(false); },
+      onClick: onAssign,
       show: hasRole('admin'),
       color: 'text-green-700 hover:bg-green-50'
     },
@@ -69,7 +86,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       ),
-      onClick: () => { onEdit(); setIsOpen(false); },
+      onClick: onEdit,
       show: hasRole('operator', 'admin'),
       color: 'text-blue-700 hover:bg-blue-50'
     },
@@ -80,17 +97,17 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
       ),
-      onClick: () => { onDelete(); setIsOpen(false); },
+      onClick: onDelete,
       show: hasRole('admin'),
       color: 'text-red-700 hover:bg-red-50'
     }
   ].filter(action => action.show);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <motion.button
         whileHover={{ scale: 1.02 }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="px-5 py-2.5 bg-white border-2 border-purple-300 hover:border-purple-400 text-gray-900 rounded-xl transition-all font-semibold text-sm flex items-center gap-2 shadow-sm hover:shadow-md"
       >
         <span>Actions</span>
@@ -102,7 +119,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
       <AnimatePresence>
         {isOpen && (
           <>
-            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+            <div className="fixed inset-0 z-10" onClick={onClose} />
             <motion.div
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -116,7 +133,7 @@ function ActionMenu({ incident, onViewComments, onUpdateStatus, onAssign, onEdit
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  onClick={action.onClick}
+                  onClick={() => { action.onClick(); onClose(); }}
                   className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors font-medium text-sm ${action.color}`}
                 >
                   {action.icon}
@@ -141,6 +158,7 @@ function Incidents() {
   const [updatingStatusIncident, setUpdatingStatusIncident] = useState(null);
   const [viewingCommentsIncident, setViewingCommentsIncident] = useState(null);
   const [deletingIncident, setDeletingIncident] = useState(null);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
   const { user, hasRole } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -454,6 +472,9 @@ function Incidents() {
                         onDelete={() => setDeletingIncident(incident)}
                         canUpdateStatus={canUpdateStatus(incident)}
                         hasRole={hasRole}
+                        isOpen={openDropdownId === incident._id}
+                        onToggle={() => setOpenDropdownId(openDropdownId === incident._id ? null : incident._id)}
+                        onClose={() => setOpenDropdownId(null)}
                       />
                     </div>
                   </div>

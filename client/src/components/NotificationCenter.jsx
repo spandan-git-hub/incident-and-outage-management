@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
@@ -12,6 +12,24 @@ function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
+  const containerRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Prevent background scroll when notification panel is open
   useEffect(() => {
@@ -119,7 +137,7 @@ function NotificationCenter() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       {/* Notification Bell Button */}
       <motion.button
         whileHover={{ scale: 1.05 }}

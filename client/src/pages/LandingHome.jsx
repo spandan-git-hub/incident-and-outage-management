@@ -105,9 +105,9 @@ function LandingHome() {
           </motion.div>
           
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Incident & Outage
+            <span className="font-serif tracking-wider">AEGIS</span>
             <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
-              Management Platform
+              Incident Management, Simplified
             </span>
           </h1>
           
