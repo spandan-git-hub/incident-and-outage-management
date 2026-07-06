@@ -123,7 +123,7 @@ The client never talks to the database directly — every request flows through 
 ## 📁 Project Structure
 
 ```
-incident-and-outage-management-platform/
+Aegis/
 ├── client/                          # React frontend
 │   ├── src/
 │   │   ├── components/              # Reusable UI components
@@ -254,8 +254,8 @@ createdAt    : Date
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/incident-and-outage-management-platform.git
-cd incident-and-outage-management-platform
+git clone https://github.com/spandan-git-hub/Aegis.git
+cd Aegis
 
 # 2. Install server dependencies
 cd server
@@ -312,7 +312,7 @@ CLIENT_URL=http://localhost:5173
 
 ```javascript
 export const API_BASE_URL = 'http://localhost:5000/api';
-// For production: 'https://your-backend.onrender.com/api'
+// For production: 'https://incident-management-api.onrender.com'
 ```
 
 ---
