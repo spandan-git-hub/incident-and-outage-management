@@ -20,8 +20,6 @@ function Dashboard() {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/api/stats/overview`);
-      console.log('Dashboard stats received:', response.data);
-      console.log('Severity stats:', response.data.severityStats);
       setStats(response.data);
       setError('');
     } catch (err) {
